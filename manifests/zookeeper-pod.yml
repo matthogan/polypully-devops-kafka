@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zookeeper-pod
+spec:
+  containers:
+    - name: zookeeper
+      image: confluentinc/cp-zookeeper:6.2.0
+      ports:
+        - containerPort: 2181
+      volumeMounts:
+        - name: zookeeper-logs
+          mountPath: "/var/lib/zookeeper/logs"
+  volumes:
+    - name: zookeeper-logs
+      persistentVolumeClaim:
+        claimName: zookeeper-logs-pvc

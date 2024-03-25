@@ -1,0 +1,149 @@
+version: "3"
+
+# Attach an external container to this network:
+#
+# docker run --network <network-name> ...
+# docker network ls
+#
+# docker system prune
+# docker volume prune -a
+#
+# export PROMETHEUS_CONFIG_PATH=~/prometheus.yml
+# export OTEL_CONFIG_PATH=~/otel-config.yml
+# export DOWNLOAD_PATH=/home/downloader/downloads
+# export STORAGE_PATH=/home/downloader/storage
+#
+# docker compose up
+# docker compose down --remove-orphans -v
+
+name: polypully
+
+services:
+  # Zookeeper service for Kafka
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:6.2.0
+    ports:
+      - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/logs
+    networks:
+      - download-network
+
+  # Kafka service
+  kafka:
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    image: confluentinc/cp-kafka:6.2.0
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - download-network
+
+  # OpenTelemetry Collector service
+  # opentelemetry-collector:
+  #   container_name: otel
+  #   image: otel/opentelemetry-collector:latest
+  #   volumes:
+  #     - ${OTEL_CONFIG_PATH}:/etc/otel-config.yaml
+  #   command: ["--config=/etc/otel-config.yaml"]
+  #   networks:
+  #     - download-network
+
+  # # InfluxDB service for storing metrics
+  # influxdb:
+  #   container_name: influxdb
+  #   image: influxdb:latest
+  #   ports:
+  #     - 8086:8086
+  #   environment:
+  #     - INFLUXDB_DB=metrics
+  #     - INFLUXDB_ADMIN_USER=admin
+  #     - INFLUXDB_ADMIN_PASSWORD=admin
+  #     - INFLUXDB_HTTP_AUTH_ENABLED=true
+  #   volumes:
+  #     - influxdb-data:/var/lib/influxdb
+  #   networks:
+  #     - download-network
+
+  # # PostgreSQL service for database
+  # postgresql:
+  #   container_name: postgres
+  #   image: postgres:latest
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=dldb
+  #   volumes:
+  #     - postgresql-data:/var/lib/postgresql/data
+  #   networks:
+  #     - download-network
+
+  # Prometheus service for monitoring
+  # prometheus:
+  #   container_name: prometheus
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - 9090:9090
+  #   volumes:
+  #     - ${PROMETHEUS_CONFIG_PATH}:/etc/prometheus/prometheus.yml
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #   networks:
+  #     - download-network
+
+  # Grafana service for visualization
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #   networks:
+  #     - download-network
+
+  # Downloader service
+  downloader:
+    container_name: downloader
+    depends_on:
+      kafka:
+        condition: service_started
+    image: github.com/codejago/polypully/downloader:0.1.0
+    ports:
+      - 8080:8080
+    volumes:
+      - ${DOWNLOAD_PATH}:/var/local/download
+      - ${STORAGE_PATH}:/var/local/storage
+    networks:
+      - download-network
+
+volumes:
+  zookeeper-data:
+  zookeeper-logs:
+  kafka-data:
+  # influxdb-data:
+  # postgresql-data:
+  # grafana-data:
+
+networks:
+  download-network:
+    name: download-network
+    driver: bridge
