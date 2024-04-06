@@ -2,4 +2,6 @@
 
 cd kafka_2.12-3.6.1
 
-bin/kafka-console-consumer.sh --topic download --bootstrap-server localhost:9092
+TOPIC=${1:download}
+
+bin/kafka-console-consumer.sh --topic "${TOPIC}" --bootstrap-server localhost:9092

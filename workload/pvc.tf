@@ -2,7 +2,7 @@
 resource "kubernetes_persistent_volume_claim" "zookeeper_data" {
   metadata {
     name      = "zookeeper-data"
-    namespace = kubernetes_namespace.polypully.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes       = ["ReadWriteOnce"]
@@ -25,7 +25,7 @@ resource "kubernetes_persistent_volume_claim" "zookeeper_data" {
 resource "kubernetes_persistent_volume_claim" "zookeeper_logs" {
   metadata {
     name      = "zookeeper-logs"
-    namespace = kubernetes_namespace.polypully.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes       = ["ReadWriteOnce"]
@@ -47,7 +47,7 @@ resource "kubernetes_persistent_volume_claim" "zookeeper_logs" {
 resource "kubernetes_persistent_volume_claim" "kafka_data" {
   metadata {
     name      = "kafka-data"
-    namespace = kubernetes_namespace.polypully.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes       = ["ReadWriteOnce"]
@@ -69,7 +69,7 @@ resource "kubernetes_persistent_volume_claim" "kafka_data" {
 resource "kubernetes_persistent_volume_claim" "download_data" {
   metadata {
     name      = "download-data"
-    namespace = kubernetes_namespace.polypully.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes       = ["ReadWriteOnce"]
@@ -91,7 +91,7 @@ resource "kubernetes_persistent_volume_claim" "download_data" {
 resource "kubernetes_persistent_volume_claim" "storage_data" {
   metadata {
     name      = "storage-data"
-    namespace = kubernetes_namespace.polypully.metadata[0].name
+    namespace = var.namespace
   }
   spec {
     access_modes       = ["ReadWriteOnce"]

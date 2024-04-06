@@ -13,7 +13,7 @@ resource "kubernetes_persistent_volume" "zookeeper_logs_pv" {
     storage_class_name = "standard"
     persistent_volume_source {
       host_path {
-        path = "/data/zookeeper/logs"
+        path = "/run/desktop/mnt/host/d/volumes/zookeeper/logs"
         type = "Directory"
       }
     }
@@ -35,7 +35,7 @@ resource "kubernetes_persistent_volume" "zookeeper_data_pv" {
     storage_class_name = "standard"
     persistent_volume_source {
       host_path {
-        path = "/data/zookeeper/data"
+        path = "/run/desktop/mnt/host/d/volumes/zookeeper/data"
         type = "Directory"
       }
     }
@@ -57,7 +57,7 @@ resource "kubernetes_persistent_volume" "kafka_data_pv" {
     storage_class_name = "standard"
     persistent_volume_source {
       host_path {
-        path = "/data/kafka/data"
+        path = "/run/desktop/mnt/host/d/volumes/kafka/data"
         type = "Directory"
       }
     }
@@ -79,7 +79,7 @@ resource "kubernetes_persistent_volume" "download_data" {
     storage_class_name = "standard"
     persistent_volume_source {
       host_path {
-        path = "/data/downloader/data"
+        path = "/run/desktop/mnt/host/d/volumes/downloader/data"
         type = "Directory"
       }
     }
@@ -101,7 +101,7 @@ resource "kubernetes_persistent_volume" "storage_data" {
     storage_class_name = "standard"
     persistent_volume_source {
       host_path {
-        path = "/data/downloader/storage"
+        path = "/run/desktop/mnt/host/d/volumes/downloader/storage"
         type = "Directory"
       }
     }

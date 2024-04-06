@@ -25,3 +25,30 @@ terraform apply -auto-approve
 ```bash
 terraform destroy -auto-approve
 ```
+
+## Test k8s connection
+
+```bash
+# Create a YAML file for your pod configuration
+cat <<EOF > pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-pod
+spec:
+  containers:
+  - name: sample-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+EOF
+
+# Apply the YAML file to create the pod
+kubectl apply -f pod.yaml
+
+# Check the status of the pod
+kubectl get pods
+
+# View detailed information about the pod
+kubectl describe pod sample-pod
+```
